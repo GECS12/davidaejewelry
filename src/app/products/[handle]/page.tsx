@@ -1,28 +1,23 @@
-"use client";
-
-import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { client } from "@/sanity/lib/client";
+import { PRODUCT_BY_SLUG_QUERY } from "@/sanity/lib/queries";
+import { ProductGallery } from "@/components/ProductGallery";
 
-import { use } from "react";
-
-export default function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
-  const { handle } = use(params);
-  const product = products.find((p) => p.handle === handle || p.id === handle);
+export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
+  
+  const product = await client.fetch(PRODUCT_BY_SLUG_QUERY, { slug: handle });
 
   if (!product) {
     notFound();
   }
 
-  // Ensure images array exists, fallback to single image or placeholder
-  const galleryImages = product.images && product.images.length > 0
-    ? product.images
-    : [product.image || "/images/placeholder.png"];
-
-  const [mainImage, setMainImage] = useState(galleryImages[0]);
+  // Combine mainImage and gallery images into one array for the gallery
+  const allImages = [
+    product.mainImage,
+    ...(product.images || [])
+  ].filter(Boolean);
 
   return (
     <main className="bg-[var(--cream)]">
@@ -31,42 +26,8 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
           {/* LEFT COLUMN: Gallery (7/12) */}
-          <div className="lg:col-span-7 space-y-4">
-            {/* Main Image */}
-            <div className="relative aspect-square w-full bg-black rounded-lg overflow-hidden shadow-sm">
-               <Image
-                src={mainImage}
-                alt={product.name}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-
-            {/* Thumbnails */}
-            {galleryImages.length > 1 && (
-              <div className="flex gap-4 overflow-x-auto pb-2">
-                {galleryImages.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setMainImage(img)}
-                    className={cn(
-                      "relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-md overflow-hidden border-2 transition-all",
-                      mainImage === img 
-                        ? "border-[var(--gold)] opacity-100" 
-                        : "border-transparent opacity-70 hover:opacity-100"
-                    )}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${product.name} view ${idx + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+          <div className="lg:col-span-7">
+             <ProductGallery images={allImages} productName={product.name} />
           </div>
 
           {/* RIGHT COLUMN: Details (5/12) */}
