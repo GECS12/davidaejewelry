@@ -1,7 +1,5 @@
 import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 
 import { use } from "react";
@@ -23,8 +21,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const categoryProducts = products.filter((p) => p.category === category);
 
   return (
-    <main className="min-h-screen bg-[var(--cream)]">
-      <Header />
+    <main className="bg-[var(--cream)]">
       
       <div className="pt-24 md:pt-32 pb-12 bg-[var(--navy)] text-white text-center">
          <h1 
@@ -63,7 +60,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         )}
       </div>
 
-      <Footer />
     </main>
   );
 }

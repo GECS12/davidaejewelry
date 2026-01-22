@@ -1,14 +1,11 @@
 import Image from "next/image";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function PhilosophyPage() {
   return (
-    <main className="min-h-screen">
-      <Header />
-
+    <main>
+      
       {/* Hero */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
         <div
@@ -258,7 +255,6 @@ export default function PhilosophyPage() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 }

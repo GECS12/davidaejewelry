@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +22,8 @@ export default function ContactsPage() {
   };
 
   return (
-    <main className="min-h-screen">
-      <Header />
-
+    <main>
+      
       {/* Hero */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
         <div
@@ -313,7 +310,6 @@ export default function ContactsPage() {
         </div>
       </section>
 
-      <Footer />
     </main>
   );
 }

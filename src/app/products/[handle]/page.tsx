@@ -2,8 +2,6 @@
 
 import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Image from "next/image";
@@ -27,8 +25,7 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
   const [mainImage, setMainImage] = useState(galleryImages[0]);
 
   return (
-    <main className="min-h-screen bg-[var(--cream)]">
-      <Header />
+    <main className="bg-[var(--cream)]">
       
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -139,7 +136,6 @@ export default function ProductPage({ params }: { params: Promise<{ handle: stri
         </div>
       </div>
       
-      <Footer />
     </main>
   );
 }
