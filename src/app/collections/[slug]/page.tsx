@@ -1,15 +1,27 @@
-import { products } from "@/lib/products";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 
-import { use } from "react";
+export const revalidate = 60; // Revalidate every minute
 
-export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
-  // Map friendly slugs to data categories
+interface SanityProduct {
+  slug: { current: string };
+  name: string;
+  price?: string;
+  category?: string;
+  mainImage?: any;
+  images?: any[];
+  details?: any;
+}
+
+export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  
+  // Map friendly slugs to data categories in Sanity
   const categoryMap: Record<string, string> = {
-    "rings": "Ring",
-    "pendants": "Pendant",
+    "rings": "ring",
+    "pendants": "pendant",
   };
 
   const category = categoryMap[slug.toLowerCase()];
@@ -18,24 +30,54 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
-  const categoryProducts = products.filter((p) => p.category === category);
+  // Fetch products for this category from Sanity
+  const query = `*[_type == "product" && category == $category] | order(_createdAt desc) {
+    _id,
+    name,
+    slug,
+    price,
+    category,
+    mainImage,
+    images,
+    details {
+      gemstone,
+      accentStone,
+      preciousMetal,
+      totalWeight
+    }
+  }`;
+  
+  const products: SanityProduct[] = await client.fetch(query, { category });
+
+  const mapProduct = (p: SanityProduct) => ({
+    id: p.slug.current,
+    name: p.name,
+    price: p.price || "Contact for Price",
+    image: p.mainImage ? urlFor(p.mainImage).width(600).url() : "/images/placeholder.png",
+    galleryImages: p.images ? p.images.map((img: any) => urlFor(img).width(600).url()) : [],
+    details: p.details
+  });
+
+  const categoryProducts = products.map(mapProduct);
 
   return (
-    <main className="bg-[var(--cream)]">
+    <main className="bg-[var(--cream)] pt-16 md:pt-20">
       
-      <div className="pt-24 md:pt-32 pb-12 bg-[var(--navy)] text-white text-center">
-         <h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-light tracking-wider mb-6"
-            style={{ fontFamily: 'var(--font-playfair)' }}
-         >
-             {slug.charAt(0).toUpperCase() + slug.slice(1)}
-         </h1>
-         <p className="text-white/80 max-w-xl mx-auto px-6 font-light">
-             Discover our exclusive collection of {slug}, crafted with precision and passion.
-         </p>
+      <div className="py-16 md:py-24 bg-[var(--navy)] text-white text-center">
+         <div className="max-w-7xl mx-auto px-6">
+            <h1 
+                className="text-4xl md:text-5xl lg:text-6xl font-light tracking-[0.2em] mb-6 uppercase"
+                style={{ fontFamily: 'var(--font-playfair)' }}
+            >
+                {slug}
+            </h1>
+            <p className="text-[var(--cream)]/80 max-w-xl mx-auto font-light tracking-wide">
+                Discover our exclusive collection of {slug}, each piece a testament to nature&apos;s beauty and refined craftsmanship.
+            </p>
+         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-20">
+      <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {categoryProducts.map((product, index) => (
                 <div 
@@ -44,18 +86,20 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     style={{ animationDelay: `${index * 100}ms` }}
                 >
                     <ProductCard
-                        id={product.handle}
+                        id={product.id}
                         name={product.name}
-                        price={product.price || "Inquire for Price"}
-                        image={product.image || "/images/placeholder.png"}
+                        price={product.price}
+                        image={product.image}
+                        galleryImages={product.galleryImages}
+                        details={product.details}
                     />
                 </div>
             ))}
         </div>
         
         {categoryProducts.length === 0 && (
-            <div className="text-center py-20 text-[var(--muted-foreground)]">
-                <p>No products found in this collection.</p>
+            <div className="text-center py-32 text-[var(--muted-foreground)]">
+                <p className="text-xl font-light italic">No products found in this collection.</p>
             </div>
         )}
       </div>

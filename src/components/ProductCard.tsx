@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,9 +12,15 @@ interface ProductCardProps {
   image: string;
   galleryImages?: string[];
   category?: "ring" | "pendant";
+  details?: {
+    gemstone?: string;
+    accentStone?: string;
+    preciousMetal?: string;
+    totalWeight?: string;
+  };
 }
 
-export function ProductCard({ id, name, price, image, galleryImages = [], category }: ProductCardProps) {
+export function ProductCard({ id, name, price, image, galleryImages = [], category, details }: ProductCardProps) {
   // Combine main image with gallery images for the carousel
   const allImages = [image, ...galleryImages];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -53,11 +60,14 @@ export function ProductCard({ id, name, price, image, galleryImages = [], catego
               src={currentImage}
               alt={name}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-110"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-[var(--navy)]/0 group-hover:bg-[var(--navy)]/5 transition-all duration-500" />
+            {/* Hover Overlay - Subtle Darkening */}
+            <div className={`absolute inset-0 bg-[var(--navy)]/5 transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+            
+            {/* Soft Gradient Overlay for non-hover state */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--navy)]/10 to-transparent transition-opacity duration-500 group-hover:opacity-0" />
             
             {/* Carousel Arrows - Only visible if more than 1 image */}
             {allImages.length > 1 && (

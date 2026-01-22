@@ -20,7 +20,7 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-4 w-full">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div className="animate-fade-in-up">
@@ -84,24 +84,11 @@ export function HeroSection() {
                 className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full opacity-20"
                 style={{
                   background:
-                    "radial-gradient(circle, var(--gold) 0%, transparent 70%)",
+                      "radial-gradient(circle, var(--gold) 0%, transparent 70%)",
                 }}
               />
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-        <div className="flex flex-col items-center gap-2">
-          <span
-            className="text-xs tracking-[0.2em] font-light"
-            style={{ color: "var(--cream)", opacity: 0.6 }}
-          >
-            SCROLL
-          </span>
-          <div className="w-px h-8 bg-[var(--gold)] opacity-50" />
         </div>
       </div>
     </section>

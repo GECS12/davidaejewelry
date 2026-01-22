@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -17,6 +18,7 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,12 +28,16 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const isHome = pathname === "/";
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? "bg-[var(--navy)]/95 backdrop-blur-md py-3 shadow-lg"
-          : "bg-transparent py-5"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isHome
+          ? isScrolled
+            ? "bg-[var(--navy)]/95 backdrop-blur-md py-3 shadow-lg"
+            : "bg-transparent py-5"
+          : "bg-[var(--navy)] py-3 shadow-md"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">

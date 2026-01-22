@@ -7,6 +7,7 @@ interface Product {
   name: string;
   price: string;
   image: string;
+  details?: any;
 }
 
 import { cn } from "@/lib/utils";
@@ -29,10 +30,10 @@ export function CollectionSection({
   className,
 }: CollectionSectionProps) {
   return (
-    <section id={id} className={cn("py-20 md:py-28 bg-[var(--cream)]", className)}>
+    <section id={id} className={cn("pt-4 pb-12 md:pt-6 md:pb-16 bg-[var(--cream)] scroll-mt-20 md:scroll-mt-24", className)}>
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="section-divider mb-6" />
           <h2
             className="text-3xl md:text-4xl lg:text-5xl font-light tracking-wide mb-4"
@@ -66,6 +67,7 @@ export function CollectionSection({
                 name={product.name}
                 price={product.price}
                 image={product.image}
+                details={product.details}
               />
             </div>
           ))}

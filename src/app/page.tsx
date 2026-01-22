@@ -15,6 +15,21 @@ interface SanityProduct {
   mainImage?: any;
   images?: any[];
   isFeatured?: boolean;
+  details?: {
+    gemstone?: string;
+    accentStone?: string;
+    preciousMetal?: string;
+    totalWeight?: string;
+  };
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  galleryImages: string[];
+  details?: any;
 }
 
 export const revalidate = 60; // Revalidate every minute
@@ -29,7 +44,13 @@ export default async function Home() {
     category,
     isFeatured,
     mainImage,
-    images
+    images,
+    details {
+      gemstone,
+      accentStone,
+      preciousMetal,
+      totalWeight
+    }
   }`;
   
   const products: SanityProduct[] = await client.fetch(query);
@@ -39,14 +60,14 @@ export default async function Home() {
     name: p.name,
     price: p.price || "Contact for Price",
     image: p.mainImage ? urlFor(p.mainImage).width(600).url() : "/images/placeholder.png",
-    galleryImages: p.images ? p.images.map((img: any) => urlFor(img).width(600).url()) : []
+    galleryImages: p.images ? p.images.map((img: any) => urlFor(img).width(600).url()) : [],
+    details: p.details
   });
 
-  // Featured Products (limit 4)
-  // If no products have isFeatured=true, fallback to first 4
+  // Featured Products (limit 8)
   const featuredRaw = products.filter((p: any) => p.isFeatured === true);
   const featuredProducts = (featuredRaw.length > 0 ? featuredRaw : products)
-    .slice(0, 4)
+    .slice(0, 8)
     .map(mapProduct);
 
   return (

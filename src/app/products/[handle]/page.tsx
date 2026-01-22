@@ -20,7 +20,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   ].filter(Boolean);
 
   return (
-    <main className="bg-[var(--cream)]">
+    <main className="bg-[var(--cream)] pt-16 md:pt-20">
       
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
