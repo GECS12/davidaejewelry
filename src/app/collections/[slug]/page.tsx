@@ -19,19 +19,21 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const { slug } = await params;
   
   // Map friendly slugs to data categories in Sanity
-  const categoryMap: Record<string, string> = {
-    "rings": "ring",
-    "pendants": "pendant",
+  // Map friendly slugs to all possible variations in Sanity
+  const categoryMap: Record<string, string[]> = {
+    "rings": ["ring", "rings"],
+    "pendants": ["pendant", "pendants"],
   };
 
-  const category = categoryMap[slug.toLowerCase()];
+  const possibleCategories = categoryMap[slug.toLowerCase()];
 
-  if (!category) {
+  if (!possibleCategories) {
     notFound();
   }
 
   // Fetch products for this category from Sanity
-  const query = `*[_type == "product" && lower(category) == $category] | order(_createdAt desc) {
+  // Using 'in' and 'lower' for maximum flexibility
+  const query = `*[_type == "product" && lower(category) in $categories] | order(_createdAt desc) {
     _id,
     name,
     slug,
@@ -47,7 +49,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
     }
   }`;
   
-  const products: SanityProduct[] = await client.fetch(query, { category });
+  const products: SanityProduct[] = await client.fetch(query, { categories: possibleCategories });
 
   const mapProduct = (p: SanityProduct) => ({
     id: p.slug.current,
