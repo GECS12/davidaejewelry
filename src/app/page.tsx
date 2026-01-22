@@ -1,8 +1,6 @@
-import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { CollectionSection } from "@/components/CollectionSection";
 import { PhilosophyPreview } from "@/components/PhilosophyPreview";
-import { Footer } from "@/components/Footer";
 
 import { products } from "@/lib/products";
 
@@ -30,9 +28,7 @@ const pendantProducts = products.filter(p => p.category === "Pendant").map(p => 
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <Header />
-      
+    <main>
       {/* Hero Section */}
       <HeroSection />
 
@@ -65,9 +61,6 @@ export default function Home() {
         className="bg-[var(--cream-dark)]"
         viewAllLink="/collections/pendants"
       />
-
-      {/* Footer */}
-      <Footer />
     </main>
   );
 }
