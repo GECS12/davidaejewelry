@@ -61,21 +61,34 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const categoryProducts = products.map(mapProduct);
 
   return (
-    <main className="bg-[var(--cream)] pt-16 md:pt-20">
+    <main className="bg-[var(--cream)]">
       
-      <div className="py-16 md:py-24 bg-[var(--navy)] text-white text-center">
-         <div className="max-w-7xl mx-auto px-6">
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: "var(--navy)" }}
+        />
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: "url('/images/silk_hero_texture_1769039275627.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
             <h1 
                 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-[0.2em] mb-6 uppercase"
-                style={{ fontFamily: 'var(--font-playfair)' }}
+                style={{ fontFamily: 'var(--font-playfair)', color: 'var(--cream)' }}
             >
                 {slug}
             </h1>
-            <p className="text-[var(--cream)]/80 max-w-xl mx-auto font-light tracking-wide">
+            <p className="text-[var(--cream)]/85 max-w-xl mx-auto font-light tracking-wide text-lg">
                 Discover our exclusive collection of {slug}, each piece a testament to nature&apos;s beauty and refined craftsmanship.
             </p>
-         </div>
-      </div>
+        </div>
+      </section>
 
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">

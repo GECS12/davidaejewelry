@@ -7,6 +7,7 @@ interface Product {
   name: string;
   price: string;
   image: string;
+  galleryImages?: string[];
   details?: any;
 }
 
@@ -67,6 +68,7 @@ export function CollectionSection({
                 name={product.name}
                 price={product.price}
                 image={product.image}
+                galleryImages={product.galleryImages}
                 details={product.details}
               />
             </div>

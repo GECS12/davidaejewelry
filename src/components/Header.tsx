@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
-  { name: "RINGS", href: "/#rings" },
-  { name: "PENDANTS", href: "/#pendants" },
+  { name: "RINGS", href: "/collections/rings" },
+  { name: "PENDANTS", href: "/collections/pendants" },
   { name: "COMMITMENTS", href: "/commitments" },
   { name: "PHILOSOPHY", href: "/philosophy" },
   { name: "CONTACTS", href: "/contacts" },
@@ -112,13 +112,13 @@ export function Header() {
               style={{ backgroundColor: "var(--navy)" }}
             >
               <div className="flex flex-col h-full pt-12">
-                <nav className="flex flex-col gap-6">
+                <nav className="flex flex-col gap-6 mt-12">
                   {navLinks.map((link) => (
                     <Link
                       key={link.name}
                       href={link.href}
                       onClick={() => setIsOpen(false)}
-                      className="text-xl tracking-[0.2em] font-light transition-colors hover:opacity-70"
+                      className="text-lg tracking-[0.2em] font-light transition-colors hover:opacity-70"
                       style={{ color: "var(--cream)" }}
                     >
                       {link.name}

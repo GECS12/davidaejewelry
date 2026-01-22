@@ -1,9 +1,6 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProductCardProps {
   id: string;
@@ -21,107 +18,66 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ id, name, price, image, galleryImages = [], category, details }: ProductCardProps) {
-  // Combine main image with gallery images for the carousel
+  // Combine main image with gallery images
   const allImages = [image, ...galleryImages];
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Cycle to next image
-  const nextImage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
-  };
-
-  // Cycle to previous image
-  const prevImage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
-  };
-
-  const currentImage = allImages[currentImageIndex];
 
   return (
-    <Link href={`/products/${id}`}>
-      <Card 
-        className="card-hover border-none shadow-md bg-white group cursor-pointer overflow-hidden rounded-lg"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => {
-            setIsHovered(false);
-            setCurrentImageIndex(0); // Reset to main image on leave? Optional design choice.
-        }}
-      >
-        <CardContent className="p-0">
-          {/* Image Container */}
-          <div className="relative aspect-square overflow-hidden bg-[var(--cream)] group">
-            
-            <Image
-              src={currentImage}
-              alt={name}
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            
-            {/* Hover Overlay - Subtle Darkening */}
-            <div className={`absolute inset-0 bg-[var(--navy)]/5 transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
-            
-            {/* Soft Gradient Overlay for non-hover state */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--navy)]/10 to-transparent transition-opacity duration-500 group-hover:opacity-0" />
-            
-            {/* Carousel Arrows - Only visible if more than 1 image */}
-            {allImages.length > 1 && (
-                <>
-                    <button 
-                        onClick={prevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-20"
-                        aria-label="Previous image"
-                    >
-                        <ChevronLeft className="w-5 h-5 text-[var(--navy)]" />
-                    </button>
-                    <button 
-                        onClick={nextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white z-20"
-                        aria-label="Next image"
-                    >
-                        <ChevronRight className="w-5 h-5 text-[var(--navy)]" />
-                    </button>
-                    
-                    {/* Dots Indicator */}
-                     <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                        {allImages.map((_, idx) => (
-                            <div 
-                                key={idx} 
-                                className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImageIndex ? 'bg-[var(--gold)]' : 'bg-white/60'}`}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
+    <div className="card-wrapper product-card-wrapper underline-links-hover group">
+      <Link href={`/products/${id}`} className="block h-full">
+        <div className="card card--standard card--media relative flex flex-col h-full bg-transparent rounded-lg overflow-hidden border border-transparent hover:border-[var(--gold)]/20 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
+          {/* Card Inner / Media */}
+          <div className="card__inner ratio aspect-square relative overflow-hidden bg-[var(--cream)]">
+            <div className="card__media absolute inset-0">
+              <div className="media media--transparent media--hover-effect h-full w-full relative group">
+                {/* Background Image (Primary) */}
+                <Image
+                  src={allImages[0]}
+                  alt={name}
+                  fill
+                  className="object-cover transition-all duration-1000 ease-in-out group-hover:scale-110"
+                  sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+                />
+                
+                {/* Hover Image (Secondary) */}
+                {allImages.length > 1 && (
+                  <Image
+                    src={allImages[1]}
+                    alt={`${name} secondary view`}
+                    fill
+                    className="object-cover transition-all duration-1000 ease-in-out absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-10"
+                    sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+                  />
+                )}
 
-
+                {/* Subtle Overlay */}
+                <div className="absolute inset-0 bg-[var(--navy)]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
+            </div>
           </div>
 
-          {/* Product Info */}
-          <div className="p-5 text-center relative z-10 bg-white">
-            <h3
-              className="text-sm md:text-base font-medium tracking-wide mb-2 line-clamp-2"
-              style={{
-                fontFamily: "var(--font-playfair)",
-                color: "var(--navy)",
-              }}
-            >
-              {name}
-            </h3>
-            <p
-              className="text-sm font-light tracking-wider"
-              style={{ color: "var(--gold-dark)" }}
-            >
-              {price}
-            </p>
+          {/* Card Content */}
+          <div className="card__content p-6 flex flex-col flex-grow justify-between text-center bg-[var(--cream)] relative z-10 transition-colors duration-300">
+            <div className="card__information">
+              <h3 className="card__heading text-sm md:text-base font-medium tracking-wide mb-3 min-h-[3rem] flex items-center justify-center">
+                <span 
+                  className="full-unstyled-link transition-colors duration-300 group-hover:text-[var(--gold-dark)]"
+                  style={{ fontFamily: "var(--font-serif)", color: "var(--navy)" }}
+                >
+                  {name}
+                </span>
+              </h3>
+              
+              <div className="price flex flex-col items-center gap-1 mt-auto">
+                <div className="price__container">
+                  <span className="price-item price-item--regular text-sm font-medium tracking-[0.05em]" style={{ color: "var(--navy)" }}>
+                    {price}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+        </div>
+      </Link>
+    </div>
   );
 }

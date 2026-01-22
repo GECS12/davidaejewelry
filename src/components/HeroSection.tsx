@@ -20,7 +20,7 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-4 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-4 w-full">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div className="animate-fade-in-up">
