@@ -1,32 +1,54 @@
 import { HeroSection } from "@/components/HeroSection";
 import { CollectionSection } from "@/components/CollectionSection";
 import { PhilosophyPreview } from "@/components/PhilosophyPreview";
+import { CheckerboardSection } from "@/components/CheckerboardSection";
 
-import { products } from "@/lib/products";
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 
-const featuredProducts = products.filter(p => ["topaz-ring", "opal-pendant-19-2k", "highest-quality-amethyst", "malachite-pendant"].includes(p.id)).map(p => ({
-  id: p.id,
-  name: p.name,
-  price: p.price || "Contact for Price",
-  image: p.image || "/images/placeholder.png"
-}));
+// Define a minimal interface for the product data coming from Sanity
+interface SanityProduct {
+  slug: { current: string };
+  name: string;
+  price?: string;
+  category?: string;
+  mainImage?: any;
+  images?: any[];
+  isFeatured?: boolean;
+}
 
-const ringProducts = products.filter(p => p.category === "Ring").map(p => ({
-  id: p.id,
-  name: p.name,
-  price: p.price || "Contact for Price",
-  image: p.image || "/images/placeholder.png"
-}));
+export const revalidate = 60; // Revalidate every minute
 
-const pendantProducts = products.filter(p => p.category === "Pendant").map(p => ({
-  id: p.id,
-  name: p.name,
-  price: p.price || "Contact for Price",
-  image: p.image || "/images/placeholder.png"
-}));
+export default async function Home() {
+  // Update query to fetch Featured status and Images
+  const query = `*[_type == "product"] | order(_createdAt desc) {
+    _id,
+    name,
+    slug,
+    price,
+    category,
+    isFeatured,
+    mainImage,
+    images
+  }`;
+  
+  const products: SanityProduct[] = await client.fetch(query);
 
+  const mapProduct = (p: SanityProduct) => ({
+    id: p.slug.current,
+    name: p.name,
+    price: p.price || "Contact for Price",
+    image: p.mainImage ? urlFor(p.mainImage).width(600).url() : "/images/placeholder.png",
+    galleryImages: p.images ? p.images.map((img: any) => urlFor(img).width(600).url()) : []
+  });
 
-export default function Home() {
+  // Featured Products (limit 4)
+  // If no products have isFeatured=true, fallback to first 4
+  const featuredRaw = products.filter((p: any) => p.isFeatured === true);
+  const featuredProducts = (featuredRaw.length > 0 ? featuredRaw : products)
+    .slice(0, 4)
+    .map(mapProduct);
+
   return (
     <main>
       {/* Hero Section */}
@@ -43,23 +65,30 @@ export default function Home() {
       {/* Philosophy Preview */}
       <PhilosophyPreview />
 
-      {/* Rings Collection */}
-      <CollectionSection
+      {/* Rings Checkerboard Section */}
+      <CheckerboardSection
         id="rings"
         title="Rings"
-        subtitle="Timeless elegance for your most precious moments."
-        products={ringProducts}
-        viewAllLink="/collections/rings"
+        subtitle="Gemstone Centric"
+        description="Carefully Crafted. Distinct Combinations. Our rings serve as a testament to the beauty of nature’s finest stones, set in designs that are both timeless and contemporary."
+        image="/images/emerald_gold_ring_1769039350067.png" // Using existing emerald ring image
+        link="/collections/rings"
+        linkText="Explore Rings"
+        imagePosition="right"
+        theme="light"
       />
 
-      {/* Pendants Collection */}
-      <CollectionSection
+      {/* Pendants Checkerboard Section */}
+      <CheckerboardSection
         id="pendants"
         title="Pendants"
-        subtitle="Graceful designs that capture light and imagination."
-        products={pendantProducts}
-        className="bg-[var(--cream-dark)]"
-        viewAllLink="/collections/pendants"
+        subtitle="Captivating Details"
+        description="Finest Materials. Lasting Enjoyment. Drapes of gold and blue frame these exquisite pendants, designed to rest close to your heart."
+        image="/images/amethyst_pendant_1769039364639.png" // Using existing amethyst pendant image
+        link="/collections/pendants"
+        linkText="Explore Pendants"
+        imagePosition="left"
+        theme="light" 
       />
     </main>
   );

@@ -72,6 +72,12 @@ export default defineType({
         title: 'Available',
         type: 'boolean',
         initialValue: true
+    }),
+    defineField({
+        name: 'isFeatured',
+        title: 'Featured',
+        type: 'boolean',
+        initialValue: false
     })
   ],
 })

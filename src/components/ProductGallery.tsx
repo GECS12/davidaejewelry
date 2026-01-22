@@ -29,7 +29,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   return (
     <div className="space-y-4">
       {/* Main Image */}
-      <div className="relative aspect-square w-full bg-white/5 rounded-lg overflow-hidden shadow-sm">
+      <div className="relative aspect-square w-full bg-white/5 rounded-lg overflow-hidden shadow-sm group">
         <Image
           src={mainImageUrl}
           alt={productName}
@@ -37,6 +37,43 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           className="object-contain"
           priority
         />
+        
+        {/* Navigation Buttons for Gallery */}
+        {validImages.length > 1 && (
+            <div className="absolute bottom-4 right-4 flex gap-2 slider-buttons quick-add-hidden">
+                <button 
+                  type="button" 
+                  onClick={() => setMainIndex((prev) => (prev - 1 + validImages.length) % validImages.length)}
+                  className="w-10 h-10 flex items-center justify-center bg-white/90 text-[var(--navy)] hover:bg-[var(--gold)] hover:text-white transition-colors rounded-full shadow-md z-10"
+                  aria-label="Slide left"
+                >
+                    <span className="w-4 h-4">
+                        <svg className="icon icon-caret" viewBox="0 0 10 6">
+                            <path fill="currentColor" fillRule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clipRule="evenodd" transform="rotate(90 5 3)"></path>
+                        </svg>
+                    </span>
+                </button>
+                
+                <div className="flex items-center justify-center px-2 bg-white/90 rounded-full shadow-md text-xs font-medium text-[var(--navy)] min-w-[3rem]">
+                    <span>{mainIndex + 1}</span>
+                    <span className="mx-1">/</span>
+                    <span>{validImages.length}</span>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={() => setMainIndex((prev) => (prev + 1) % validImages.length)}
+                  className="w-10 h-10 flex items-center justify-center bg-white/90 text-[var(--navy)] hover:bg-[var(--gold)] hover:text-white transition-colors rounded-full shadow-md z-10"
+                  aria-label="Slide right"
+                >
+                    <span className="w-4 h-4">
+                        <svg className="icon icon-caret" viewBox="0 0 10 6">
+                            <path fill="currentColor" fillRule="evenodd" d="M9.354.646a.5.5 0 0 0-.708 0L5 4.293 1.354.646a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708" clipRule="evenodd" transform="rotate(-90 5 3)"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        )}
       </div>
 
       {/* Thumbnails */}
