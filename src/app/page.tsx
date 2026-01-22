@@ -64,9 +64,13 @@ export default async function Home() {
     details: p.details
   });
 
-  // Featured Products (limit 8)
-  const featuredRaw = products.filter((p: any) => p.isFeatured === true);
-  const featuredProducts = (featuredRaw.length > 0 ? featuredRaw : products)
+  // Featured Products logic:
+  // 1. Get all products marked as featured
+  // 2. If fewer than 8, add non-featured products to fill the list up to 8
+  const featuredOnly = products.filter((p: any) => p.isFeatured === true);
+  const nonFeatured = products.filter((p: any) => p.isFeatured !== true);
+  
+  const featuredProducts = [...featuredOnly, ...nonFeatured]
     .slice(0, 8)
     .map(mapProduct);
 

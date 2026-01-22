@@ -31,7 +31,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   }
 
   // Fetch products for this category from Sanity
-  const query = `*[_type == "product" && category == $category] | order(_createdAt desc) {
+  const query = `*[_type == "product" && lower(category) == $category] | order(_createdAt desc) {
     _id,
     name,
     slug,
