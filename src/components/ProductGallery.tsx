@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { urlFor } from "@/sanity/lib/image";
@@ -15,6 +15,27 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const validImages = images.filter(Boolean);
   
   const [mainIndex, setMainIndex] = useState(0);
+
+  const nextImage = useCallback(() => {
+    setMainIndex((prev) => (prev + 1) % validImages.length);
+  }, [validImages.length]);
+
+  const prevImage = useCallback(() => {
+    setMainIndex((prev) => (prev - 1 + validImages.length) % validImages.length);
+  }, [validImages.length]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        prevImage();
+      } else if (e.key === "ArrowRight") {
+        nextImage();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [nextImage, prevImage]);
 
   if (validImages.length === 0) {
     return (
@@ -40,12 +61,16 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         
         {/* Navigation Buttons for Gallery */}
         {validImages.length > 1 && (
-            <div className="absolute bottom-4 right-4 flex gap-2 slider-buttons quick-add-hidden">
+            <>
                 <button 
                   type="button" 
-                  onClick={() => setMainIndex((prev) => (prev - 1 + validImages.length) % validImages.length)}
-                  className="w-10 h-10 flex items-center justify-center bg-white/90 text-[var(--navy)] hover:bg-[var(--gold)] hover:text-white transition-colors rounded-full shadow-md z-10"
-                  aria-label="Slide left"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    prevImage();
+                  }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 text-[var(--navy)] hover:bg-[var(--gold)] hover:text-white transition-all rounded-full shadow-md z-20 opacity-0 group-hover:opacity-100"
+                  aria-label="Previous image"
                 >
                     <span className="w-4 h-4">
                         <svg className="icon icon-caret" viewBox="0 0 10 6">
@@ -53,18 +78,16 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                         </svg>
                     </span>
                 </button>
-                
-                <div className="flex items-center justify-center px-2 bg-white/90 rounded-full shadow-md text-xs font-medium text-[var(--navy)] min-w-[3rem]">
-                    <span>{mainIndex + 1}</span>
-                    <span className="mx-1">/</span>
-                    <span>{validImages.length}</span>
-                </div>
 
                 <button 
                   type="button" 
-                  onClick={() => setMainIndex((prev) => (prev + 1) % validImages.length)}
-                  className="w-10 h-10 flex items-center justify-center bg-white/90 text-[var(--navy)] hover:bg-[var(--gold)] hover:text-white transition-colors rounded-full shadow-md z-10"
-                  aria-label="Slide right"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    nextImage();
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 text-[var(--navy)] hover:bg-[var(--gold)] hover:text-white transition-all rounded-full shadow-md z-20 opacity-0 group-hover:opacity-100"
+                  aria-label="Next image"
                 >
                     <span className="w-4 h-4">
                         <svg className="icon icon-caret" viewBox="0 0 10 6">
@@ -72,7 +95,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                         </svg>
                     </span>
                 </button>
-            </div>
+            </>
         )}
       </div>
 
