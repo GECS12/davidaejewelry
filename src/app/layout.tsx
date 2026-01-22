@@ -33,7 +33,7 @@ export default function RootLayout({
       <body className="antialiased flex flex-col min-h-screen">
           <Header />
             {/* Flex-grow pushes footer down if content is short */}
-            <div className="flex-grow">
+            <div className="flex-grow animate-fade-in-up">
                 {children}
             </div>
           <Footer />

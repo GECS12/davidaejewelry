@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
 
 interface ProductCardProps {
   id: string;
@@ -18,35 +19,78 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ id, name, price, image, galleryImages = [], category, details }: ProductCardProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
   // Combine main image with gallery images
-  const allImages = [image, ...galleryImages];
+  const allImages = [image, ...galleryImages].slice(0, 5); // Limit to 5 for hover performance
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || allImages.length <= 1) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    
+    // Calculate which segment the mouse is in
+    const segmentWidth = width / allImages.length;
+    const newIndex = Math.floor(x / segmentWidth);
+    
+    if (newIndex >= 0 && newIndex < allImages.length && newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setActiveIndex(0);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
 
   return (
     <div className="card-wrapper product-card-wrapper underline-links-hover group">
       <Link href={`/products/${id}`} className="block h-full">
-        <div className="card card--standard card--media relative flex flex-col h-full bg-transparent rounded-lg overflow-hidden border border-transparent hover:border-[var(--gold)]/20 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1">
+        <div 
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="card card--standard card--media relative flex flex-col h-full bg-transparent rounded-lg overflow-hidden border border-transparent hover:border-[var(--gold)]/20 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1"
+        >
           {/* Card Inner / Media */}
           <div className="card__inner ratio aspect-square relative overflow-hidden bg-[var(--cream)]">
             <div className="card__media absolute inset-0">
-              <div className="media media--transparent media--hover-effect h-full w-full relative group">
-                {/* Background Image (Primary) */}
-                <Image
-                  src={allImages[0]}
-                  alt={name}
-                  fill
-                  className="object-cover transition-all duration-1000 ease-in-out group-hover:scale-110"
-                  sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
-                />
-                
-                {/* Hover Image (Secondary) */}
-                {allImages.length > 1 && (
+              <div className="media media--transparent h-full w-full relative">
+                {allImages.map((img, index) => (
                   <Image
-                    src={allImages[1]}
-                    alt={`${name} secondary view`}
+                    key={index}
+                    src={img}
+                    alt={`${name} view ${index + 1}`}
                     fill
-                    className="object-cover transition-all duration-1000 ease-in-out absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 z-10"
+                    className={`object-cover transition-opacity duration-500 ease-in-out absolute inset-0 ${
+                      index === activeIndex ? "opacity-100 scale-105" : "opacity-0"
+                    }`}
                     sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+                    priority={index === 0}
                   />
+                ))}
+
+                {/* Segmented Indicators */}
+                {allImages.length > 1 && (
+                  <div 
+                    className={`absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-1.5 transition-opacity duration-300 ${isHovering ? "opacity-100" : "opacity-0"}`}
+                  >
+                    {allImages.map((_, index) => (
+                      <div 
+                        key={index}
+                        className={`image-indicator-dot ${index === activeIndex ? "active" : ""}`}
+                      />
+                    ))}
+                  </div>
                 )}
 
                 {/* Subtle Overlay */}
