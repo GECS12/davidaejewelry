@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { urlFor } from "@/sanity/lib/image";
@@ -12,9 +12,20 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   // Filter out any invalid images just in case
-  const validImages = images.filter(Boolean);
+  const validImages = useMemo(() => images.filter(Boolean), [images]);
   
   const [mainIndex, setMainIndex] = useState(0);
+
+  // Pre-calculate all image URLs to avoid recalculation on render
+  const imageUrls = useMemo(() => 
+    validImages.map(img => urlFor(img).width(1200).url()),
+    [validImages]
+  );
+
+  const thumbUrls = useMemo(() => 
+    validImages.map(img => urlFor(img).width(200).url()),
+    [validImages]
+  );
 
   const nextImage = useCallback(() => {
     setMainIndex((prev) => (prev + 1) % validImages.length);
@@ -45,19 +56,28 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     );
   }
 
-  const mainImageUrl = urlFor(validImages[mainIndex]).width(1200).url();
-
   return (
     <div className="space-y-4">
-      {/* Main Image */}
+      {/* Main Image Container */}
       <div className="relative aspect-square w-full bg-white/5 rounded-lg overflow-hidden shadow-sm group">
-        <Image
-          src={mainImageUrl}
-          alt={productName}
-          fill
-          className="object-contain"
-          priority
-        />
+        {imageUrls.map((url, idx) => (
+          <div 
+            key={idx}
+            className={cn(
+              "absolute inset-0 transition-opacity duration-300 ease-in-out",
+              mainIndex === idx ? "opacity-100 z-10" : "opacity-0 z-0"
+            )}
+          >
+            <Image
+              src={url}
+              alt={`${productName} view ${idx + 1}`}
+              fill
+              className="object-contain"
+              priority={idx === 0}
+              loading={idx === 0 ? "eager" : "lazy"}
+            />
+          </div>
+        ))}
         
         {/* Navigation Buttons for Gallery */}
         {validImages.length > 1 && (
@@ -102,7 +122,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
       {/* Thumbnails */}
       {validImages.length > 1 && (
         <div className="flex gap-4 overflow-x-auto pb-2">
-          {validImages.map((img, idx) => (
+          {thumbUrls.map((url, idx) => (
             <button
               key={idx}
               onClick={() => setMainIndex(idx)}
@@ -114,8 +134,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               )}
             >
               <Image
-                src={urlFor(img).width(200).url()}
-                alt={`${productName} view ${idx + 1}`}
+                src={url}
+                alt={`${productName} thumbnail ${idx + 1}`}
                 fill
                 className="object-cover"
               />
