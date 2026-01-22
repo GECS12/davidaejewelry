@@ -9,8 +9,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export default function ProductPage({ params }: { params: { handle: string } }) {
-  const product = products.find((p) => p.handle === params.handle || p.id === params.handle);
+import { use } from "react";
+
+export default function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = use(params);
+  const product = products.find((p) => p.handle === handle || p.id === handle);
 
   if (!product) {
     notFound();

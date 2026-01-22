@@ -4,14 +4,17 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 
-export default function CollectionPage({ params }: { params: { slug: string } }) {
+import { use } from "react";
+
+export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
   // Map friendly slugs to data categories
   const categoryMap: Record<string, string> = {
     "rings": "Ring",
     "pendants": "Pendant",
   };
 
-  const category = categoryMap[params.slug.toLowerCase()];
+  const category = categoryMap[slug.toLowerCase()];
 
   if (!category) {
     notFound();
@@ -28,10 +31,10 @@ export default function CollectionPage({ params }: { params: { slug: string } })
             className="text-4xl md:text-5xl lg:text-6xl font-light tracking-wider mb-6"
             style={{ fontFamily: 'var(--font-playfair)' }}
          >
-             {params.slug.charAt(0).toUpperCase() + params.slug.slice(1)}
+             {slug.charAt(0).toUpperCase() + slug.slice(1)}
          </h1>
          <p className="text-white/80 max-w-xl mx-auto px-6 font-light">
-             Discover our exclusive collection of {params.slug}, crafted with precision and passion.
+             Discover our exclusive collection of {slug}, crafted with precision and passion.
          </p>
       </div>
 
